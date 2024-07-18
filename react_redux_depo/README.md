@@ -1,17 +1,8 @@
 # Set up react redux and tailwind
 
-1. Clone the repository:
+ 
 
-    ```bash
-    git clone https://github.com/SengOudom/react_redux_depo.git
-    ```
-
-    ```bash
-    cd  react_redux_depo
-    ```
-    
-
-2. You can install
+1. You can install
 
     ```bash
      npm install
@@ -21,7 +12,7 @@
      yarn install
     ```
  
-3. You can run
+2. You can run
 
     ```bash
      npm start
