@@ -25,6 +25,8 @@ class AuthController extends Controller
         $now_dt = date("Y-m-d H:i:s");
         $token = Str::random(80);
         $pass_hash = Hash::make($password);
+        $ip = $request->ip;
+        $ip_replace = str_replace(' ', '#', $ip);
 
         if (strlen($username) == 0) {
             return response()->json([
@@ -54,7 +56,7 @@ class AuthController extends Controller
             ]);
         }
 
-        $values = ['username' => $username, 'password' => $pass_hash, 'email' => $email, 'token' => $token, 'created_at' => $now_dt,];
+        $values = ['username' => $username, 'password' => $pass_hash, 'email' => $email, 'token' => $token, 'created_at' => $now_dt, 'status' => 1, 'ip' => $ip_replace];
         $res = DB::table('users')->insert($values);
 
         if ($res) {
@@ -76,6 +78,8 @@ class AuthController extends Controller
         $password = $request->password;
         $token = Str::random(80);
         $now_dt = date("Y-m-d H:i:s");
+        $ip = $request->ip;
+        $ip_replace = str_replace(' ', '#', $ip);
 
         if (strlen($username) == 0) {
             return response()->json([
@@ -97,8 +101,9 @@ class AuthController extends Controller
             $pass_hash = $data->password;
             $pass_chcek = Hash::check($password, $pass_hash);
             if ($user_check && $pass_chcek) {
-                DB::table('users')->where('id', $data->id)->update(['token' => $token]);
+                DB::table('users')->where('id', $data->id)->update(['token' => $token, 'ip' => $ip_replace]);
                 $res = DB::table('users')->where('username', $username)->first();
+                $IP = str_replace('#', ' ', $res->ip);
                 return response()->json([
                     'code' => 1,
                     'data' => [
@@ -107,9 +112,8 @@ class AuthController extends Controller
                         'email' => $res->email,
                         'token' => $res->token,
                         'created_at' => $res->created_at,
-                        'ip' => $res->ip,
+                        'ip' => $IP,
                         'status' => $res->status,
-                        'login_time' => $now_dt,
                     ]
                 ]);
             } else {
@@ -139,6 +143,8 @@ class AuthController extends Controller
         // $data = Users::where('username', $username)->first();
         $data = DB::table('users')->where('token', $token)->first();
         if ($data) {
+            $token_update = Str::random(80);
+            DB::table('users')->where('id', $data->id)->update(['token' => $token_update]);
             return response()->json([
                 'code' => 1,
                 'message' => 'success'

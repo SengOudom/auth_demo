@@ -29,7 +29,8 @@ export default function Router() {
 
   const LoadUser = useCallback(async () => {
     const res = await loadUser();
-    if (parseFloat(res.code) === 1) {
+    const code = res?.code;
+    if (parseFloat(code) === 1) {
       dispatch(setGlobal({ auth: res.data }));
     } else {
       dispatch(setGlobal({ auth: {} }));

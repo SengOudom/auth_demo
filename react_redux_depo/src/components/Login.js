@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { loginUser , setToken} from "../utils/helpres";
+import { loginUser, setToken } from "../utils/helpres";
 import { useDispatch } from "react-redux";
 import { setGlobal } from "../actions/globalAction";
 import Navbar from "./Navbar";
@@ -28,11 +28,12 @@ export default function Login() {
     setSubmit(true);
     const formData = new FormData(e.currentTarget);
     const res = await loginUser(formData);
-    if (parseFloat(res.code) === 1) {
+    const code = res?.code;
+    if (parseFloat(code) === 1) {
       const data = res.data;
       const token = res.data.token;
       dispatch(setGlobal({ auth: data }));
-      setToken(token)
+      setToken(token);
       navigate("/");
     }
     setSubmit(false);

@@ -3,11 +3,13 @@ import Navbar from "./Navbar";
 import { useSelector } from "react-redux";
 import { logoutUser } from "../utils/helpres";
 import { useNavigate } from "react-router-dom";
+import { getLoginTime } from "../utils/helpres";
 
 export default function Profile() {
   const { auth } = useSelector((s) => s.global);
   const navigate = useNavigate();
-  const { username, email, created_at, login_time } = auth;
+  const login_time = getLoginTime();
+  const { username, email, created_at } = auth;
 
   const Logout = async () => {
     const res = await logoutUser();

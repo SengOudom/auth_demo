@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Users;
 use Illuminate\Support\Facades\DB;
+use Stevebauman\Location\Facades\Location;
 
 class UsersController extends Controller
 {
@@ -18,6 +19,8 @@ class UsersController extends Controller
     {
         $token = $request->token;
         $now_dt = date("Y-m-d H:i:s");
+        $ip = $request->ip;
+        $ip_replace = str_replace(' ', '#', $ip);
 
         if (strlen($token) == 0) {
             return response()->json([
@@ -25,18 +28,19 @@ class UsersController extends Controller
                 'messages' => 'token empty'
             ]);
         }
-        // $data = Users::where('username', $username)->first();
+
         $data = DB::table('users')->where('token', $token)->first();
         if ($data) {
+            DB::table('users')->where('id', $data->id)->update(['ip' => $ip_replace]);
+            $IP = str_replace('#', ' ', $data->ip);
             $res = [
                 'id' => $data->id,
                 'username' => $data->username,
                 'email' => $data->email,
                 'token' => $data->token,
                 'created_at' => $data->created_at,
-                'ip' => $data->ip,
+                'ip' => $IP,
                 'status' => $data->status,
-                'login_time' => $now_dt,
             ];
             return response()->json([
                 'code' => 1,
