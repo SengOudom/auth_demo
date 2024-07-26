@@ -1,19 +1,24 @@
 import React from "react";
 import Navbar from "./Navbar";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { logoutUser } from "../utils/helpres";
 import { useNavigate } from "react-router-dom";
 import { getLoginTime } from "../utils/helpres";
+import { setGlobal } from "../actions/globalAction";
 
 export default function Profile() {
   const { auth } = useSelector((s) => s.global);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const login_time = getLoginTime();
   const { username, email, created_at } = auth;
 
   const Logout = async () => {
     const res = await logoutUser();
-    if (parseFloat(res.code) === 1) navigate("/");
+    if (parseFloat(res.code) === 1) {
+      dispatch(setGlobal({ auth: {} }));
+      navigate("/");
+    }
   };
 
   return (

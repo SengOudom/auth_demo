@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Route, Routes /*Switch*/, useLocation } from "react-router-dom";
+import {   Route, Routes /*Switch*/, useLocation } from "react-router-dom";
 import Main from "./components/Main";
 import CakePage from "./components/CakePage";
 import Products from "./components/Products";
@@ -12,6 +12,7 @@ import { loadUser, getToken } from "./utils/helpres";
 import { setGlobal } from "./actions/globalAction";
 import Loading from "./components/Loading";
 import Profile from "./components/Profile";
+ 
 
 const NotFound = () => (
   <>
@@ -39,12 +40,12 @@ export default function Router() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (token) {
+    if (token && isEmpty(auth)) {
       return () => LoadUser();
     } else {
       setLoading(false);
     }
-  }, [pathname, LoadUser, token]);
+  }, [pathname, LoadUser, token, auth]);
 
   if (loading) return <Loading />;
 

@@ -1,24 +1,30 @@
 import axios from "axios";
 import { API_LOCAL } from "../config";
-import secureLocalStorage from "react-secure-storage";
+// import secureLocalStorage from "react-secure-storage";
 import { isMobile } from "react-device-detect";
 import moment from "moment";
 import "moment-timezone";
+import Cookies from "js-cookie";
 
 export const ipInfo = async () => {
-  let data;
-  const type = isMobile;
-  const deviceType = type ? "mobile" : "pc";
-  const ua = window.navigator.appVersion;
-  const res = await axios.get("https://geolocation-db.com/json/");
-  if (res.status === 200) {
-    const resData = res?.data;
-    data = `${resData?.IPv4} ${deviceType} - ${ua}`;
-    secureLocalStorage.setItem("ip", data);
-  } else {
-    data = secureLocalStorage.getItem("ip");
+  try {
+    let data;
+    const type = isMobile;
+    const deviceType = type ? "mobile" : "pc";
+    const ua = window.navigator.appVersion;
+    const res = await axios.get("https://api.ipify.org/?format=json");
+    if (res.status === 200) {
+      const resData = res?.data;
+      data = `${resData?.ip} ${deviceType} - ${ua}`;
+      Cookies.set("ip", data, { expires: 7, secure: true });
+    } else {
+      data = Cookies.get("ip");
+    }
+    if (data) return data;
+    throw data;
+  } catch (error) {
+    console.log("ipInfo", error);
   }
-  return data;
 };
 
 export const getFormData = (formData) => {
@@ -34,20 +40,20 @@ export const getFormData = (formData) => {
 };
 
 export const getToken = () => {
-  const token = secureLocalStorage.getItem("token");
+  const token = Cookies.get("token");
   return token;
 };
 
 export const setToken = (token) => {
-  secureLocalStorage.setItem("token", token);
+  Cookies.set("token", token, { expires: 7, secure: true });
 };
 
 export const setLoginTime = (login_time) => {
-  secureLocalStorage.setItem("login_time", login_time);
+  Cookies.set("login_time", login_time, { expires: 7, secure: true });
 };
 
 export const getLoginTime = () => {
-  const login_time = secureLocalStorage.getItem("login_time");
+  const login_time = Cookies.get("login_time");
   return login_time;
 };
 
@@ -104,7 +110,9 @@ export const logoutUser = async () => {
     const res = await axios.post(api, { token });
     const code = res?.data?.code;
     if (parseFloat(code) === 1) {
-      secureLocalStorage.clear();
+      Cookies.remove("token");
+      Cookies.remove("ip");
+      Cookies.remove("login_time");
       return res.data;
     }
   } catch (error) {
